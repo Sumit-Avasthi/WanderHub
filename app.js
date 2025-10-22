@@ -78,7 +78,7 @@ main().then(()=>{
 
 
 app.get("/",(req,res)=>{
-    res.render("index.ejs");
+    res.redirect("/listings");
 });
 
 
