@@ -77,7 +77,9 @@ main().then(()=>{
 });
 
 
-
+app.get("/",(req,res)=>{
+    res.render("index.ejs");
+});
 
 
 async function main(){
@@ -121,14 +123,6 @@ app.use('/',userRoutes);
 
 
 
-app.get('/demouser',async (req,res)=>{
-    let fakeUser = new User({
-        email : "xyz@gmail.com",
-        username : "fake-student",
-    });
-    let data = await User.register(fakeUser,"helloworld");
-    res.send(data);
-})
 
 app.use((req,res,next)=>{
    next(new ExpressError(404,"Page Not Found!!!"));
