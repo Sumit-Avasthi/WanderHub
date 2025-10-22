@@ -1,0 +1,120 @@
+<% layout("/layouts/boilerplate") -%>
+
+<body class="bg-light">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="card shadow-sm p-4 border-0 rounded-3">
+          <h3 class="mb-4 text-center fw-semibold">Edit Listing</h3>
+
+          <form method="POST" action="/listings/<%=data._id%>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
+
+            <!-- Title -->
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input 
+                type="text" 
+                value="<%=data.title%>" 
+                name="listing[title]" 
+                id="title" 
+                class="form-control" 
+                required
+              >
+              <div class="valid-feedback">Title looks good!</div>
+              <div class="invalid-feedback">Please enter a title.</div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea 
+                name="listing[description]" 
+                id="description" 
+                class="form-control" 
+                rows="3" 
+                required
+              ><%=data.description%></textarea>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please enter the description.</div>
+            </div>
+
+            <!-- Current Image -->
+            <div class="mb-3 text-center">
+              <p class="mb-1">Current Image</p>
+              <img 
+                src="<%= originalimageurl %>" 
+                alt="Current Listing Image" 
+                class="img-fluid rounded shadow-sm" 
+                style="max-height: 250px; object-fit: cover;"
+              >
+            </div>
+
+            <!-- Upload New Image -->
+            <div class="mb-3">
+              <label class="form-label" for="url">Upload New Image</label>
+              <input 
+                type="file" 
+                name="listing[image]" 
+                id="url" 
+                class="form-control"
+                accept="image/*"
+              >
+            </div>
+
+            <!-- Price and Country -->
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="price" class="form-label">Price (₹)</label>
+                <input 
+                  type="number" 
+                  value="<%=data.price%>" 
+                  name="listing[price]" 
+                  id="price" 
+                  class="form-control" 
+                  min="0"
+                  required
+                >
+                <div class="valid-feedback">Thanks!</div>
+                <div class="invalid-feedback">Please enter the price.</div>
+              </div>
+
+              <div class="col-md-8">
+                <label for="country" class="form-label">Country</label>
+                <input 
+                  type="text" 
+                  value="<%=data.country%>" 
+                  name="listing[country]" 
+                  id="country" 
+                  class="form-control" 
+                  required
+                >
+                <div class="valid-feedback">Awesome!</div>
+                <div class="invalid-feedback">Please enter country name.</div>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="mb-3 mt-3">
+              <label for="location" class="form-label">Location</label>
+              <input 
+                type="text" 
+                value="<%=data.location%>" 
+                name="listing[location]" 
+                id="location" 
+                class="form-control" 
+                required
+              >
+              <div class="valid-feedback">Looks great!</div>
+              <div class="invalid-feedback">Please enter the location.</div>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid mt-4">
+              <button class="btn btn-dark py-2 fw-semibold">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
