@@ -30,7 +30,7 @@ const store = MongoStore.create({
     touchAfter : 24 * 3600,
 });
 
-store.on("error",()=>{
+store.on("error",(err)=>{
     console.log("Error in mongo session store", err);
 });
 
@@ -136,6 +136,7 @@ app.use((err,req,res,next)=>{
 });
 
 
-app.listen(3000,()=>{
-    console.log("App is listening");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`App is listening on port ${PORT}`);
 });
