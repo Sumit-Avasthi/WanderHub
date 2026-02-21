@@ -60,6 +60,17 @@ passport.use(new localStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.use((req,res,next)=>{
+    res.locals.message = req.flash("success");
+    res.locals.error = req.flash("error");
+    res.locals.register = req.flash("register");
+    res.locals.currUser = req.user || null;
+
+
+    // console.log(req.flash("error"));
+    next();
+});
+
 app.engine("ejs",ejsMate);
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"/views"));
@@ -87,16 +98,7 @@ async function main(){
 }
 
 
-app.use((req,res,next)=>{
-    res.locals.message = req.flash("success");
-    res.locals.error = req.flash("error");
-    res.locals.register = req.flash("register");
-    res.locals.currUser = req.user || null;
 
-
-    // console.log(req.flash("error"));
-    next();
-});
 
 
 
