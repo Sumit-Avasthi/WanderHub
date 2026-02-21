@@ -131,11 +131,17 @@ app.use((req,res,next)=>{
    next(new ExpressError(404,"Page Not Found!!!"));
 });
 
-app.use((err,req,res,next)=>{
-    let {status = 500,message = "Something went wrong"} = err;
-    res.status(status).render("error.ejs",{err});
-    // res.status(status).send(message);
+app.use((err, req, res, next) => {
+    console.error("ERROR:", err);
+
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    let { status = 500, message = "Something went wrong" } = err;
+    res.status(status).render("error.ejs", { err });
 });
+
 
 
 const PORT = process.env.PORT || 3000;
