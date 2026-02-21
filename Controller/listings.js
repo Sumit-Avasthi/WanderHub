@@ -17,10 +17,10 @@ module.exports.create = async (req,res,next)=>{
     let {country,location} = req.body.listing;
     const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location +','+country)}&format=geojson`;
     const response = await axios.get(geoUrl);
-    if(!response.data.features.length){
-        req.flash("error","Invalid Location");
-        res.redirect("/listings/new");
-    }else{
+if(!response.data.features.length){
+    req.flash("error","Invalid Location");
+    return res.redirect("/listings/new");
+}else{
     // console.log(response.data.features[0].geometry);
     let url = req.file.path;
     let filename = req.file.filename;
@@ -41,10 +41,9 @@ const {id} = req.params;
 const data =  await Listing.findById(id).populate({path :"reviews", populate : { path : "owner" ,},}).populate("owner");
 if(!data){
     req.flash("error","Listing Does Not EXIST!!!");
-    res.redirect("/listings");
-}else{
-res.render("listings/show.ejs",{ data });
+    return res.redirect("/listings");
 }
+res.render("listings/show.ejs",{ data });
 
 }
 
@@ -52,57 +51,58 @@ res.render("listings/show.ejs",{ data });
 module.exports.put = async (req,res)=>{
    let {id} = req.params;
    const data = req.body.listing;
-   Listing.findByIdAndUpdate(id,{
-    title : data.title,
-    description : data.description,
-    price : data.price,
-    country : data.country,
-    location : data.location,
-   }).then(async (data)=>{
-    if(typeof req.file != "undefined"){
-           let url = req.file.path;
-           let filename = req.file.filename;
-        data.image = {url,filename};
-        const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(data.location +','+data.country)}&format=geojson`;
-         const response = await axios.get(geoUrl);
-         data.geometry = response.data.features[0].geometry;
-        await data.save();
-    }
-    req.flash("success","Updated Successfully");
-    res.redirect(`/listings/${id}`);
-   }).catch((err)=>{
-      res.send("Updation Error");
+
+   const listing = await Listing.findByIdAndUpdate(id,{
+        title : data.title,
+        description : data.description,
+        price : data.price,
+        country : data.country,
+        location : data.location,
    });
 
+   if(!listing){
+        req.flash("error","Listing not found!");
+        return res.redirect("/listings");
+   }
+
+   if(req.file){
+        let url = req.file.path;
+        let filename = req.file.filename;
+        listing.image = {url,filename};
+        await listing.save();
+   }
+
+   req.flash("success","Updated Successfully");
+   return res.redirect(`/listings/${id}`);
 }
+
 
 
 module.exports.delete = async (req,res)=>{
-        const {id} = req.params;
-         const listing = await Listing.findById(id);
-          if (!listing) {
-                req.flash("error", "Listing not found!");
-                return res.redirect("/listings");
-            }
-        if (listing.image && listing.image.filename) {
-    await cloudinary.uploader.destroy(listing.image.filename);
-  }
-        Listing.findByIdAndDelete(id).then(()=>{
-            req.flash("success","Deleted Successfully");
-            res.redirect("/listings");
-        }).catch((err)=>{
-            res.send("Database Error");
-        });
+    const {id} = req.params;
+
+    const listing = await Listing.findById(id);
+    if (!listing) {
+        req.flash("error", "Listing not found!");
+        return res.redirect("/listings");
+    }
+
+    await Listing.findByIdAndDelete(id);
+
+    req.flash("success","Deleted Successfully");
+    return res.redirect("/listings");
 }
+
 
 
 module.exports.edit = async (req,res)=>{
     const {id} = req.params;
     const data  = await Listing.findById(id);
     if(!data){
-        req.flash("error","Listing Does Not EXIST!!!");
-       res.redirect("/listings");
-    }else{
+    req.flash("error","Listing Does Not EXIST!!!");
+    return res.redirect("/listings");
+}
+else{
     let originalimageurl = data.image.url;
     originalimageurl= originalimageurl.replace("/upload","/upload/w_250");
     res.render("listings/edit.ejs",{data,originalimageurl});
